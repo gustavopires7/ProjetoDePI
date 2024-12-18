@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="card border-0 shadow-lg mb-4 bg-primary bg-gradient text-white">
+        <div class="card-body p-5">
+            <div class="row align-items-center">
+                <div class="col-lg-3 text-center">
+                    {% if user.imagem_perfil %}
+                        <img src="{{ user.imagem_perfil.url }}" 
+                             class="rounded-circle img-thumbnail shadow border-3 mb-3 mb-lg-0" 
+                             alt="Foto de Perfil" 
+                             style="width: 200px; height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-white text-primary d-flex justify-content-center align-items-center mx-auto shadow"
+                             style="width: 200px; height: 200px; font-size: 4rem;">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-9">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="display-5 mb-0">{{ user.get_full_name }}</h1>
+                            <p class="lead text-white-50">@{{ user.username }}</p>
+                        </div>
+                        <div>
+                            <a href="{% url 'profile_edit' %}" class="btn btn-light me-2">
+                                <i class="bi bi-pencil-square"></i> Editar Perfil
+                            </a>
+                            <a href="{% url 'profile_delete' %}" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Excluir Conta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column -->
+        <div class="col-lg-4">
+            <!-- Informações Pessoais -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-person text-primary me-2"></i>
+                        Informações Pessoais
+                    </h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-envelope text-primary me-3 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">E-mail</small>
+                                    <span>{{ user.email }}</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-telephone text-primary me-3 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Telefone</small>
+                                    <span>{{ user.telefone|default:"Não informado" }}</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-calendar text-primary me-3 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Data de Nascimento</small>
+                                    <span>{{ user.data_nascimento|date:"d/m/Y"|default:"Não informada" }}</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Endereço -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-geo-alt text-primary me-2"></i>
+                        Endereço
+                    </h4>
+                    {% if user.endereco %}
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <div class="d-flex">
+                                    <i class="bi bi-pin-map text-primary me-3 fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Localização</small>
+                                        <span>{{ user.endereco.cidade.nome }} - {{ user.endereco.cidade.estado.sigla }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="mb-3">
+                                <div class="d-flex">
+                                    <i class="bi bi-house text-primary me-3 fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Endereço Completo</small>
+                                        <span>
+                                            {{ user.endereco.rua }}, {{ user.endereco.numero }}
+                                            {% if user.endereco.bairro %}- {{ user.endereco.bairro }}{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="d-flex">
+                                    <i class="bi bi-mailbox text-primary me-3 fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">CEP</small>
+                                        <span>{{ user.endereco.cep|default:"Não informado" }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="bi bi-house-x display-4"></i>
+                            <p class="mt-2">Nenhum endereço cadastrado</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-8">
+            {% if user.profissional %}
+                <!-- Seção do Profissional -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">
+                            <i class="bi bi-briefcase text-primary me-2"></i>
+                            Informações Profissionais
+                        </h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="border rounded p-3">
+                                    <small class="text-muted d-block">CRM</small>
+                                    <strong>{{ user.profissional.CRM }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-3">
+                                    <small class="text-muted d-block">Especialidade</small>
+                                    <strong>{{ user.profissional.especialidade.nome|default:"Não informada" }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="border rounded p-3">
+                                    <small class="text-muted d-block">Biografia</small>
+                                    <p class="mb-0">{{ user.profissional.biografia|default:"Biografia não fornecida." }}</p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="border rounded p-3">
+                                    <small class="text-muted d-block">Valor da Consulta</small>
+                                    <strong>R$ {{ user.profissional.preco_servico|floatformat:2|default:"0,00" }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avaliações Recebidas -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">
+                            <i class="bi bi-star text-primary me-2"></i>
+                            Avaliações Recebidas
+                        </h4>
+                        <div class="text-center">
+                            <h2 class="display-4 mb-3">
+                                {{ user.profissional.calcular_nota_media|default:"0"|floatformat:1 }}
+                                <small class="text-muted fs-6">/5.0</small>
+                            </h2>
+                            <p class="text-muted">
+                                Total de {{ user.profissional.avaliacoes.count }} avaliações
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Histórico de Avaliações -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">
+                            <i class="bi bi-star text-primary me-2"></i>
+                            Minhas Avaliações
+                        </h4>
+                        {% if user.avaliacao_set.all %}
+                            {% for avaliacao in user.avaliacao_set.all %}
+                                <div class="border-bottom mb-4 pb-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="mb-0">Dr. {{ avaliacao.profissional.usuario.get_full_name }}</h5>
+                                        <div>
+                                            <button class="btn btn-link text-danger" onclick="excluirAvaliacao({{ avaliacao.id }})">
+                                                <i class="bi bi-trash"></i> Excluir
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="text-warning mb-2">
+                                        {% for i in "12345"|make_list %}
+                                            <i class="bi bi-star{% if forloop.counter <= avaliacao.nota %}-fill{% endif %}"></i>
+                                        {% endfor %}
+                                        <small class="text-muted ms-2">{{ avaliacao.data_avaliacao|date:"d/m/Y" }}</small>
+                                    </div>
+                                    {% if avaliacao.titulo %}
+                                        <h6 class="text-primary">{{ avaliacao.titulo }}</h6>
+                                    {% endif %}
+                                    <p class="mb-2">{{ avaliacao.comentario }}</p>
+                                    {% if avaliacao.recomenda %}
+                                        <div class="badge bg-success">
+                                            <i class="bi bi-hand-thumbs-up me-1"></i>
+                                            Recomenda
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="bi bi-star text-muted display-4"></i>
+                                <p class="mt-3 text-muted">Você ainda não fez nenhuma avaliação</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <script>
+                function excluirAvaliacao(avaliacaoId) {
+                    if (confirm('Tem certeza que deseja excluir esta avaliação?')) {
+                        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                        
+                        fetch(`/avaliacao/${avaliacaoId}/excluir/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken,
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            }
+                            throw new Error('Erro na requisição');
+                        })
+                        .then(data => {
+                            if (data.status === 'success') {
+                                location.reload();
+                            } else {
+                                alert(data.message || 'Erro ao excluir avaliação');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            alert('Erro ao excluir avaliação');
+                        });
+                    }
+                }
+                </script>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

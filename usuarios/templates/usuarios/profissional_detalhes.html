@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="card border-0 shadow-lg mb-4 bg-primary bg-gradient text-white">
+        <div class="card-body p-5">
+            <div class="row align-items-center">
+                <div class="col-lg-3 text-center">
+                    {% if profissional.imagem %}
+                        <img src="{{ profissional.imagem.url }}" 
+                             class="rounded-circle img-thumbnail shadow border-3 mb-3 mb-lg-0" 
+                             alt="Imagem do Profissional" 
+                             style="width: 200px; height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-white text-primary d-flex justify-content-center align-items-center mx-auto shadow"
+                             style="width: 200px; height: 200px; font-size: 4rem;">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-9">
+                    <div class="d-flex align-items-center mb-3">
+                        <h1 class="display-5 mb-0 me-3">Dr. {{ profissional.usuario.get_full_name }}</h1>
+                        <span class="badge bg-light text-primary fs-6 py-2 px-3">
+                            <i class="bi bi-star-fill text-warning me-1"></i>
+                            {{ profissional.calcular_nota_media|default:"Novo"|floatformat:1 }}
+                        </span>
+                    </div>
+                    <h3 class="h4 mb-4 text-light opacity-75">{{ profissional.especialidade.nome }}</h3>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="bg-white bg-opacity-10 rounded-3 p-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-shield-check fs-3 me-2"></i>
+                                    <div>
+                                        <small class="text-light opacity-75">CRM</small>
+                                        <div class="fw-bold">{{ profissional.CRM }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bg-white bg-opacity-10 rounded-3 p-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-currency-dollar fs-3 me-2"></i>
+                                    <div>
+                                        <small class="text-light opacity-75">Valor da Consulta</small>
+                                        <div class="fw-bold">R$ {{ profissional.preco_servico|floatformat:2 }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="row g-4">
+        <!-- Left Column -->
+        <div class="col-lg-8">
+            <!-- Sobre o Profissional -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-person-lines-fill text-primary me-2"></i>
+                        Sobre o Profissional
+                    </h4>
+                    <p class="card-text lead">{{ profissional.biografia|default:"Biografia não fornecida." }}</p>
+                </div>
+            </div>
+
+            <!-- Adicionar antes da listagem de avaliações -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-star text-primary me-2"></i>
+                        Avaliar Profissional
+                    </h4>
+                    <form id="avaliacaoForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Sua Avaliação</label>
+                            <div class="star-rating">
+                                <button type="button" class="btn star-btn" data-rating="1" title="1 estrela">★</button>
+                                <button type="button" class="btn star-btn" data-rating="2" title="2 estrelas">★</button>
+                                <button type="button" class="btn star-btn" data-rating="3" title="3 estrelas">★</button>
+                                <button type="button" class="btn star-btn" data-rating="4" title="4 estrelas">★</button>
+                                <button type="button" class="btn star-btn" data-rating="5" title="5 estrelas">★</button>
+                                <input type="hidden" name="nota" id="rating-value" value="">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="titulo" placeholder="Título da avaliação">
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" name="comentario" rows="3" 
+                                      placeholder="Compartilhe sua experiência..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="recomenda" id="recomenda" checked>
+                                <label class="form-check-label" for="recomenda">
+                                    Recomendo este profissional
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-2"></i>Enviar Avaliação
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Avaliações -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title mb-0">
+                            <i class="bi bi-star text-primary me-2"></i>
+                            Avaliações dos Pacientes
+                        </h4>
+                        <span class="badge bg-primary px-3 py-2">
+                            {{ profissional.avaliacoes.count }} Avaliações
+                        </span>
+                    </div>
+
+                    {% if profissional.avaliacoes.all %}
+                        {% for avaliacao in profissional.avaliacoes.all %}
+                            <div class="border-bottom mb-4 pb-4">
+                                <div class="d-flex mb-3">
+                                    <div class="me-3">
+                                        {% if avaliacao.cliente.imagem_perfil %}
+                                            <img src="{{ avaliacao.cliente.imagem_perfil.url }}" 
+                                                 class="rounded-circle" 
+                                                 alt="Foto do cliente"
+                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="rounded-circle bg-light border d-flex justify-content-center align-items-center"
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="bi bi-person-fill text-secondary fs-3"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h5 class="mb-1">{{ avaliacao.cliente.first_name }} {{ avaliacao.cliente.last_name }}</h5>
+                                            {% if request.user == avaliacao.cliente %}
+                                                <button class="btn btn-link text-danger btn-sm" onclick="excluirAvaliacao({{ avaliacao.id }})">
+                                                    <i class="bi bi-trash"></i> Excluir
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="text-warning me-2">
+                                                {% for i in "12345"|make_list %}
+                                                    <i class="bi bi-star{% if forloop.counter <= avaliacao.nota %}-fill{% endif %}"></i>
+                                                {% endfor %}
+                                            </div>
+                                            <small class="text-muted">{{ avaliacao.data_avaliacao|date:"d/m/Y" }}</small>
+                                        </div>
+                                        {% if avaliacao.titulo %}
+                                            <h6 class="text-primary mb-2">{{ avaliacao.titulo }}</h6>
+                                        {% endif %}
+                                        <p class="mb-2">{{ avaliacao.comentario }}</p>
+                                        {% if avaliacao.recomenda %}
+                                            <div class="badge bg-success">
+                                                <i class="bi bi-hand-thumbs-up me-1"></i>
+                                                Recomenda
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-chat-square-text text-muted display-4"></i>
+                            <p class="mt-3 text-muted">Este profissional ainda não possui avaliações.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-4">
+            <!-- Agendar Consulta Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">Agendar Consulta</h4>
+                    {% if profissional.usuario.telefone_profissional %}
+                        <a href="https://wa.me/55{{ profissional.usuario.telefone|cut:' '|cut:'('|cut:')'|cut:'-' }}" 
+                           target="_blank" 
+                           class="btn btn-success btn-lg w-100 mb-3">
+                            <i class="bi bi-whatsapp me-2"></i>
+                            Conversar pelo WhatsApp
+                        </a>
+                    {% endif %}
+                    <button onclick="enviarEmailAgendamento()" class="btn btn-primary btn-lg w-100 mb-3">
+                        <i class="bi bi-calendar2-plus me-2"></i>
+                        Agendar Agora
+                    </button>
+                    <small class="text-muted d-block text-center">
+                        Resposta em até 24 horas
+                    </small>
+                </div>
+            </div>
+
+            <!-- Informações de Contato -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">Informações de Contato</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-envelope text-primary me-3 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">E-mail</small>
+                                    <span>{{ profissional.usuario.email }}</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-telephone text-primary me-3 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Telefone</small>
+                                    <span>{{ profissional.usuario.telefone|default:"Não informado" }}</span>
+                                </div>
+                            </div>
+                        </li>
+                        {% if profissional.usuario.endereco %}
+                        <li>
+                            <div class="d-flex">
+                                <i class="bi bi-geo-alt text-primary me-3 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Endereço</small>
+                                    <span>{{ profissional.usuario.endereco }}</span>
+                                </div>
+                            </div>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+// Adicione um console.log para debug
+console.log('Registrando eventos uma única vez');
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Remova listeners anteriores para garantir
+    const form = document.getElementById('avaliacaoForm');
+    if (form) {
+        const oldForm = form.cloneNode(true);
+        form.parentNode.replaceChild(oldForm, form);
+        
+        const stars = document.querySelectorAll('.star-btn');
+        const ratingInput = document.getElementById('rating-value');
+        let isSubmitting = false;
+    
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                ratingInput.value = rating;
+                
+                stars.forEach(s => {
+                    if (s.dataset.rating <= rating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+        
+        oldForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (isSubmitting) {
+                console.log('Já está enviando, ignorando submissão duplicada');
+                return;
+            }
+            
+            if (!ratingInput.value) {
+                alert('Por favor, selecione uma nota');
+                return;
+            }
+            
+            isSubmitting = true;
+            console.log('Iniciando submissão do formulário');
+            
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const formData = new FormData(this);
+            
+            fetch(`/profissional/{{ profissional.id }}/avaliar/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    csrfmiddlewaretoken: csrftoken,
+                    nota: ratingInput.value,
+                    titulo: formData.get('titulo') || '',
+                    comentario: formData.get('comentario') || '',
+                    recomenda: formData.get('recomenda') ? 'true' : 'false'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert(data.message || 'Erro ao enviar avaliação');
+                    isSubmitting = false;
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao enviar avaliação');
+                isSubmitting = false;
+            });
+        });
+    }
+});
+
+function enviarEmailAgendamento() {
+    fetch(`/profissional/{{ profissional.id }}/agendar/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.open(data.gmail_link, '_blank');
+            } else {
+                alert(data.message || 'Erro ao abrir Gmail');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao abrir Gmail');
+        });
+}
+
+function excluirAvaliacao(avaliacaoId) {
+    if (confirm('Tem certeza que deseja excluir esta avaliação?')) {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch(`/avaliacao/${avaliacaoId}/excluir/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Erro na requisição');
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert(data.message || 'Erro ao excluir avaliação');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao excluir avaliação');
+        });
+    }
+}
+</script>
+
+<style>
+.star-rating {
+    display: flex;
+    gap: 5px;
+}
+
+.star-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.star-btn:hover,
+.star-btn.active {
+    color: #ffc107;
+}
+</style>
+
+{% endblock %}
+{% endblock %}

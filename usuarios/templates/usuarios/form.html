@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="text-center mb-0">Editar Perfil</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Informações Básicas -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Informações Básicas</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Telefone</label>
+                                    {{ form.telefone }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Data de Nascimento</label>
+                                    {{ form.data_nascimento }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Imagem de Perfil</label>
+                                    {{ form.imagem_perfil }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Endereço -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Endereço</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Estado</label>
+                                        {{ form.estado }}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Cidade</label>
+                                        {{ form.cidade }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label class="form-label">Rua</label>
+                                        {{ form.rua }}
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Número</label>
+                                        {{ form.numero }}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">CEP</label>
+                                    {{ form.cep }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+             
+
+{% block content %}    
+    <div class="container container-login">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Bem-vindo</h2>
+                <p class="text-muted">Faça login em sua conta</p>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuário</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="remember-me">
+                    <label class="form-check-label" for="remember-me">Lembrar de mim</label>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-login">Entrar</button>
+                </div>
+            </form>
+            <div class="text-center mt-3">
+                <a href="#" class="text-muted" style="text-decoration: none;">Esqueceu sua senha?</a>
+            </div>
+            <div class="text-center mt-3">
+                <p class="text-muted">Não tem uma conta? <a href="{% url 'tipo_usuario' %}" style="text-decoration: none;">Cadastre-se</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+</html>

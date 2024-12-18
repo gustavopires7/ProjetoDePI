@@ -1,0 +1,33 @@
+{% if is_paginated %}
+<nav aria-label="Navegação da página">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?{% if request.GET.nome %}nome={{ request.GET.nome }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for page in page_obj.paginator.page_range %}
+        {% if page == page_obj.number %}
+        <li class="page-item active">
+            <span class="page-link">{{ page }}</span>
+        </li>
+        {% elif page >= page_obj.number|add:-2 and page <= page_obj.number|add:2 %}
+        <li class="page-item">
+            <a class="page-link" href="?{% if request.GET.nome %}nome={{ request.GET.nome }}&{% endif %}page={{ page }}">{{ page }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?{% if request.GET.nome %}nome={{ request.GET.nome }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Próxima">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

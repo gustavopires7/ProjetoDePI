@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="user-type-container">
+        <h2>Bem-vindo ao Nosso Sistema</h2>
+        <p class="text-muted">Escolha o tipo de usuário que melhor representa você:</p>
+        
+        <div class="user-type-options">
+            <div class="user-type-card" data-type="client">
+                <img src="{% static 'images/cliente.svg' %}" alt="Ícone Cliente">
+                <h4>Cliente</h4>
+                <p class="text-muted">Busco serviços de saúde</p>
+            </div>
+            
+            <div class="user-type-card" data-type="professional">
+                <img src="{% static 'images/medico.svg' %}" alt="Ícone Profissional">
+                <h4>Profissional</h4>
+                <p class="text-muted">Ofereço serviços de saúde</p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="#" id="continueBtn" class="btn btn-primary" style="display:none;">Continuar</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

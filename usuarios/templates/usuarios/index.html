@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section py-5 mb-5 position-relative">
+    <div class="hero-bg position-absolute top-0 start-0 w-100 h-100"></div>
+    <div class="container py-4 position-relative">
+        <div class="row align-items-center">
+            <div class="col-md-6 pe-md-5">
+                <span class="badge bg-primary text-white mb-3 px-3 py-2 rounded-pill">
+                    <i class="bi bi-heart-pulse-fill me-1"></i> Saúde ao seu alcance
+                </span>
+                <h1 class="display-4 fw-bold text-primary mb-3" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
+                    Conecte-se aos Melhores Profissionais de Saúde
+                </h1>
+                <p class="lead text-dark mb-4">
+                    Encontre especialistas qualificados e agende suas consultas de forma rápida e segura.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'tipo_usuario' %}" class="btn btn-primary btn-lg shadow-sm">
+                        <i class="bi bi-person-plus me-2"></i>Cadastre-se
+                    </a>
+                    <button class="btn btn-outline-primary btn-lg" onclick="focusSearch()">
+                        <i class="bi bi-search me-2"></i>Buscar Profissionais
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6 mt-5 mt-md-0">
+                <div class="position-relative">
+                    <img src="https://img.freepik.com/free-vector/flat-hand-drawn-patient-taking-medical-examination_52683-57829.jpg" 
+                         class="img-fluid rounded-4 shadow-lg" 
+                         alt="Medical illustration"
+                         style="border: 5px solid rgba(13, 110, 253, 0.1);">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 rounded-4" 
+                         style="box-shadow: inset 0 0 20px rgba(13, 110, 253, 0.1);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="container mb-5" id="search-section">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form class="d-flex" method="get">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-0">
+                                        <i class="bi bi-search text-primary"></i>
+                                    </span>
+                                    <input class="form-control border-0" type="search" name="nome" id="search-input"
+                                           placeholder="Buscar por nome" value="{{ request.GET.nome }}">
+                                    <button class="btn btn-primary px-4" type="submit">Buscar</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <form class="d-flex" method="get">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-0">
+                                        <i class="bi bi-filter text-primary"></i>
+                                    </span>
+                                    <select class="form-select border-0" name="especialidade">
+                                        <option value="">Todas Especialidades</option>
+                                        {% for especialidade in especialidades %}
+                                            <option value="{{ especialidade.id }}" 
+                                            {% if request.GET.especialidade == especialidade.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ especialidade.nome }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-primary px-4" type="submit">Filtrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Stats Section -->
+<div class="container mb-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-person-check text-primary display-4"></i>
+                    <h3 class="mt-3">Profissionais Verificados</h3>
+                    <p class="text-muted">Todos os profissionais passam por verificação de credenciais.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-calendar-check text-primary display-4"></i>
+                    <h3 class="mt-3">Agendamento Fácil</h3>
+                    <p class="text-muted">Marque suas consultas de forma rápida e prática.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-star text-primary display-4"></i>
+                    <h3 class="mt-3">Avaliações Reais</h3>
+                    <p class="text-muted">Feedback genuíno de outros pacientes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Professionals Section -->
+<div class="container" id="profissionais">
+    <h2 class="text-center mb-4">Profissionais Disponíveis</h2>
+    
+    <div class="row g-4">
+        {% for profissional in profissionais %}
+        <div class="col-md-6">
+            <div class="card h-100 professional-card border-0 shadow-sm hover-card">
+                <div class="row g-0 h-100">
+                    <div class="col-4 p-3 d-flex align-items-center justify-content-center">
+                        {% if profissional.imagem %}
+                            <img src="{{ profissional.imagem.url }}" 
+                                 class="rounded-circle img-thumbnail shadow-sm" 
+                                 alt="Profissional" 
+                                 style="width: 130px; height: 130px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-light d-flex justify-content-center align-items-center shadow-sm" 
+                                 style="width: 130px; height: 130px;">
+                                <i class="bi bi-person-fill text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body d-flex flex-column h-100">
+                            <div>
+                                <h5 class="card-title text-primary mb-1">
+                                    {{ profissional.usuario.get_full_name }}
+                                </h5>
+                                <p class="text-muted small mb-2">
+                                    <i class="bi bi-shield-check text-success"></i> CRM: {{ profissional.CRM }}
+                                </p>
+                                <p class="mb-2">
+                                    <span class="badge bg-primary">{{ profissional.especialidade.nome }}</span>
+                                </p>
+                                <p class="mb-2 text-success">
+                                    <i class="bi bi-currency-dollar"></i>
+                                    <strong>{{ profissional.preco_servico|floatformat:2 }}</strong>
+                                </p>
+                            </div>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <a href="{% url 'profissional_detalhes' pk=profissional.pk %}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-info-circle me-1"></i> Ver Detalhes
+                                </a>
+                                {% if profissional.calcular_nota_media %}
+                                    <div class="bg-light rounded px-3 py-2">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <span class="ms-1 fw-bold">{{ profissional.calcular_nota_media|floatformat:1 }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center shadow-sm" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                Nenhum profissional encontrado com os critérios selecionados.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function focusSearch() {
+        const searchSection = document.getElementById('search-section');
+        const searchInput = document.getElementById('search-input');
+        
+        searchSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Pequeno delay para garantir que o scroll termine antes do focus
+        setTimeout(() => {
+            searchInput.focus();
+        }, 500);
+    }
+</script>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5em 1em;
+    }
+    .hero-section {
+        background-color: #f8f9fa;
+        overflow: hidden;
+    }
+    .hero-bg {
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+        z-index: 0;
+    }
+    html {
+        scroll-behavior: smooth;
+    }
+    .page-link {
+        color: var(--bs-primary);
+        padding: 0.75rem 1rem;
+    }
+    .page-item.active .page-link {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+    .page-link:hover {
+        color: var(--bs-primary);
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+</style>
+{% endblock %}
